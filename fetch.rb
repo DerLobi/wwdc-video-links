@@ -11,7 +11,7 @@ urls = {}
 
 years.each do |year|
 baseurl = "https://developer.apple.com/videos/wwdc/#{year}/"
-
+puts "scraping #{baseurl}"
 doc = Nokogiri::HTML(open(baseurl, :allow_redirections => :all))
 
 doc.search("li.collection-item//a").each do |link|
@@ -20,7 +20,7 @@ doc.search("li.collection-item//a").each do |link|
 	href = link.attr("href")
 
   slug = href.split("/")[-1]
-
+	print "getting video URL for #{slug}..."
   sessionurl = baseurl + href
 
   page = Nokogiri::HTML(open(sessionurl))
@@ -28,8 +28,25 @@ doc.search("li.collection-item//a").each do |link|
 	videolink = page.search("video.center//source").first
 	videosource = videolink.attr("src")
 
-  urls[slug] = videosource
-  p slug
+	videodata = {
+		"videoURL" => videosource
+	}
+
+	# for videos earlier than 2015 no thumbnails seem to be available :(
+	if year == 2015
+		sessionnumber = videosource.split("/")[-2]
+		thumbnailcomponents = videosource.split("/")
+		thumbnailcomponents.pop
+		thumbnailcomponents.push("images")
+		thumbnailcomponents.push("#{sessionnumber}_734x413.jpg")
+		thumbnailurl = thumbnailcomponents.join("/")
+		videodata["thumbnailURL"] = thumbnailurl
+	else
+		videodata["thumbnailURL"] = nil
+	end
+
+  urls[slug] = videodata
+  puts " done."
 end
 
 end
