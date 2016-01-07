@@ -41,8 +41,6 @@ doc.search("li.collection-item//a").each do |link|
 		thumbnailcomponents.push("#{sessionnumber}_734x413.jpg")
 		thumbnailurl = thumbnailcomponents.join("/")
 		videodata["thumbnailURL"] = thumbnailurl
-	else
-		videodata["thumbnailURL"] = nil
 	end
 
   urls[slug] = videodata
